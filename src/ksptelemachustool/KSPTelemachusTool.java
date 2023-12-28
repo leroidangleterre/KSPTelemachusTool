@@ -65,8 +65,8 @@ public class KSPTelemachusTool {
 
                             String currentAltString = dataLines[3].split(":")[1];
                             String currentAirspeedString = dataLines[7].split(":")[1];
-                            currentAltString = truncate2(currentAltString);
-                            currentAirspeedString = truncate2(currentAirspeedString);
+                            currentAltString = KSPUtils.truncate(currentAltString, 2);
+                            currentAirspeedString = KSPUtils.truncate(currentAirspeedString, 2);
                             double currentAlt = new Double(currentAltString);
                             double currentAirspeed = new Double(currentAirspeedString);
 
@@ -83,20 +83,6 @@ public class KSPTelemachusTool {
                     }
                 }
 
-                /**
-                 * Keep only two digits after decimal point
-                 *
-                 */
-                private String truncate2(String value) {
-                    int decimalPointPosition = value.indexOf('.');
-                    if (decimalPointPosition == -1) {
-                        // No decimal point, no change needed.
-                        return value;
-                    } else {
-                        // keep characters from beginning to 2 after decimal point.
-                        return value.substring(0, decimalPointPosition + 3);
-                    }
-                }
             },
                     delay,
                     period);
