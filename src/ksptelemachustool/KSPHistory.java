@@ -35,4 +35,9 @@ public class KSPHistory {
     double getAlt(int i) {
         return altitudes.get(i);
     }
+
+    void reset() {
+        altitudes.clear();
+        speeds.clear();
+    }
 }

@@ -67,10 +67,16 @@ public class KSPTelemachusTool {
                             String currentAirspeedString = dataLines[7].split(":")[1];
                             currentAltString = KSPUtils.truncate(currentAltString, 2);
                             currentAirspeedString = KSPUtils.truncate(currentAirspeedString, 2);
+
+//                            System.out.println("All lines:");
+//                            for (String line : dataLines) {
+//                                System.out.println("\t" + line);
+//                            }
+//                            System.out.println("All lines end.");
                             double currentAlt = new Double(currentAltString);
                             double currentAirspeed = new Double(currentAirspeedString);
 
-                            System.out.println("altitude: " + currentAlt + ", airspeed: " + currentAirspeed);
+//                            System.out.println("altitude: " + currentAlt + ", airspeed: " + currentAirspeed);
                             history.update(currentAlt, currentAirspeed);
                             frame.repaint();
                         }
