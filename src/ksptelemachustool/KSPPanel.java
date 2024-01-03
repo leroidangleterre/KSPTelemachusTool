@@ -16,14 +16,16 @@ public class KSPPanel extends JPanel {
 
     private double minSpeed = -10, maxSpeed = 10, minAlt = 0, maxAlt = 0;
 
+    private boolean displayOrbitalSpeed;
+
     public KSPPanel(KSPHistory newHistory) {
         super();
         this.history = newHistory;
+        displayOrbitalSpeed = false;
     }
 
     @Override
     public void paintComponent(Graphics g) {
-//        System.out.println("KSP panel repainting now.");
 
         int radius = 5;
 
@@ -36,22 +38,33 @@ public class KSPPanel extends JPanel {
         drawAltitudeAxis(g, graphicsHeight, graphicsWidth);
 
         // Paint dots
-        g.setColor(Color.red);
+        int xApp = 0, yApp = 0;
         for (int i = 0; i < history.getNbElements(); i++) {
-            double speed = history.getSpeed(i);
+            double speed;
+            if (displayOrbitalSpeed) {
+                speed = history.getOrbitalSpeed(i);
+                g.setColor(Color.red);
+            } else {
+                speed = history.getGroundSpeed(i);
+                g.setColor(Color.blue);
+            }
             double alt = history.getAlt(i);
-            int xApp = (int) ((speed - minSpeed) * graphicsWidth / (maxSpeed - minSpeed));
-            int yApp = (int) ((1 - (alt - minAlt) / (maxAlt - minAlt)) * graphicsHeight);
+            xApp = (int) ((speed - minSpeed) * graphicsWidth / (maxSpeed - minSpeed));
+            yApp = (int) ((1 - (alt - minAlt) / (maxAlt - minAlt)) * graphicsHeight);
 
             g.fillOval(xApp - radius, yApp - radius, 2 * radius, 2 * radius);
         }
+
+        // Paint a circle at current position
+        g.setColor(Color.blue);
+        g.drawOval(xApp - radius, yApp - radius, 2 * radius, 2 * radius);
     }
 
     private void drawSpeedAxis(Graphics g, int graphicsHeight, int graphicsWidth) {
         // Set max speed
         maxSpeed = 0;
         for (int i = 0; i < history.getNbElements(); i++) {
-            double currentSpeed = history.getSpeed(i);
+            double currentSpeed = displayOrbitalSpeed ? history.getOrbitalSpeed(i) : history.getGroundSpeed(i);
             maxSpeed = Math.max(maxSpeed, currentSpeed + 1);
         }
 
@@ -59,13 +72,18 @@ public class KSPPanel extends JPanel {
         g.setColor(Color.black);
         g.drawLine(0, graphicsHeight - 1, graphicsWidth, graphicsHeight - 1);
 
-        double speedUnit = Math.pow(10, Math.floor(Math.log10(maxSpeed)));
+        double speedUnit = 1;
+        if (maxSpeed < 5000) {
+            speedUnit = Math.pow(10, Math.floor(Math.log10(maxSpeed)));
+        } else {
+            speedUnit = 1000;
+        }
         Graphics2D g2 = (Graphics2D) g;
         for (double speed = 0; speed < maxSpeed; speed += speedUnit) {
             int xApp = (int) (speed * graphicsWidth / maxSpeed);
             g2.setStroke(new BasicStroke(5));
             g2.drawLine(xApp, graphicsHeight - 0, xApp, graphicsHeight - 10);
-            g2.drawString(KSPUtils.truncate(speed + "", 0), xApp, graphicsHeight - 15);
+            g2.drawString(speed + "", xApp, graphicsHeight - 15);
 
             // Add subdivisions
             for (int i = 1; i <= 9; i++) {
@@ -100,17 +118,27 @@ public class KSPPanel extends JPanel {
         g.setColor(Color.black);
         g.drawLine(1, graphicsHeight, 1, 0);
 
+        if (maxAlt - minAlt > 10) {
+            minAlt = 0;
+        }
+
+        // Paind graduations
         double altUnit = Math.pow(10, Math.floor(Math.log10(maxAlt - minAlt)));
         Graphics2D g2 = (Graphics2D) g;
         for (double alt = minAlt; alt <= maxAlt; alt += altUnit) {
             int yApp = (int) ((1 - (alt - minAlt) / (maxAlt - minAlt)) * graphicsHeight);
             System.out.println("yApp = " + yApp + ", graphics height: " + graphicsHeight);
             g2.setStroke(new BasicStroke(5));
-            g2.drawLine(10, yApp, 15, yApp);
-            g2.drawString(KSPUtils.truncate(alt + "", 0), 15, yApp);
+            g2.drawLine(1, yApp, 10, yApp);
+            g2.drawString(KSPUtils.truncate(alt + "", 0), 15, yApp + 15);
 
             // Add subdivisions
-//            for (int i = 1; i <= 9; i++) {                double intermAlt = alt + i * altUnit / 10;                yApp = (int) ((1 - (intermAlt - minAlt) / (maxAlt - minAlt)) * graphicsHeight);                if (i == 5) {                    g2.setStroke(new BasicStroke(3));                } else {                    g2.setStroke(new BasicStroke(1));                }                g.drawLine(10, graphicsHeight - yApp, 12, graphicsHeight - yApp);            }
+            for (int i = 1; i <= 9; i++) {
+                double intermAlt = alt + i * altUnit / 10;
+                yApp = (int) ((1 - (intermAlt - minAlt) / (maxAlt - minAlt)) * graphicsHeight);
+                g2.setStroke(new BasicStroke(1));
+                g2.drawLine(1, yApp, 10, yApp);
+            }
         }
     }
 
@@ -121,5 +149,9 @@ public class KSPPanel extends JPanel {
 
     protected void clearData() {
         history.reset();
+    }
+
+    protected void setOrbitalSpeed(boolean newIsSpeedOrbital) {
+        displayOrbitalSpeed = newIsSpeedOrbital;
     }
 }

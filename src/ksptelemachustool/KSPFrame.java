@@ -15,30 +15,30 @@ import javax.swing.JFrame;
  */
 public class KSPFrame extends JFrame {
 
-    private int width = 1000;
-    private int height = 1000;
-
     private KSPPanel panel;
 
     public KSPFrame(KSPHistory history) {
         super();
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setPreferredSize(new Dimension(width, height));
-        setSize(new Dimension(width, height));
-        panel = new KSPPanel(history);
-        this.setContentPane(panel);
-
-        JButton clearButton = new JButton();
-        clearButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                panel.clearData();
-            }
-        });
-
-        this.setLayout(new BorderLayout());
-        this.add(clearButton, BorderLayout.SOUTH);
-        setVisible(true);
+//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        setPreferredSize(new Dimension(width, height + 50));
+//        setSize(new Dimension(width, height + 50));
+//        panel = new KSPPanel(history);
+//        panel.setPreferredSize(new Dimension(500, 500));
+//        panel.setSize(new Dimension(500, 500));
+//
+//        this.setContentPane(panel);
+//        JButton clearButton = new JButton();
+//        clearButton.addActionListener(new ActionListener() {
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                panel.clearData();
+//            }
+//        });
+//
+//        this.setLayout(new BorderLayout());
+//        this.add(clearButton, BorderLayout.EAST);
+//        this.pack();
+//        setVisible(true);
     }
 
 }
